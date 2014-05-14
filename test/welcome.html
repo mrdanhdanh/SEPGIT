@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    		<script type="text/javascript" src="javascript/jquery-1.11.0.js"></script>
+    <script>
+        $(document).ready(function() {
+    var options = {
+        chart: {
+            renderTo: 'container',
+            type: 'spline'
+        },
+        series: [{}]
+    };
+    
+    var url =  "welcome.php?callback=?";
+    $.getJSON(url,  function(data) {
+        options.series[0].data = data;
+        $('#container').highcharts(options);
+    });
+});
+    </script>
+</head>
+<body>
+    <script src="highcharts/js/highcharts.js"></script>
+<script src="highcharts/js/modules/no-data-to-display.js"></script>
+<script src="highcharts/js/modules/exporting.js"></script>
+<div id="container"></div>
+</body>
+</html>
