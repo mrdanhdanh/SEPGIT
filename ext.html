@@ -35,7 +35,7 @@ subs = Ext.create('Ext.data.Store', {
         {"send":"5", "name":"SO2"},
         {"send":"6", "name":"PM2.5"}
     ]
-});
+}),
 unit = Ext.create('Ext.data.Store', {
     fields: ['send', 'name'],
     data : [
@@ -43,10 +43,10 @@ unit = Ext.create('Ext.data.Store', {
         {"send":"si", "name":"SI"}
     ]
 });
-		var myData = [];
+
 		var store = Ext.create('Ext.data.ArrayStore', {
         fields: [
-           {name: 'time', type: 'date', dateFormat: 'Y-n-j H:i:s'},
+           {name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'},
            {name: 'Metan',      type: 'float'},
            {name: 'NMHC',     type: 'float'},
            {name: 'Ozone',  type: 'float'},
@@ -55,7 +55,7 @@ unit = Ext.create('Ext.data.Store', {
            {name: 'PM25',  type: 'float'}
            
         ],
-        data: myData
+        data: []
     });
     Ext.create('Ext.container.Viewport', {
     layout: 'border',
@@ -73,6 +73,7 @@ unit = Ext.create('Ext.data.Store', {
 minWidth: 220,
 	xtype: 'form',
     bodyPadding: 5,
+id: 'form',
     // The form will submit an AJAX request to this URL when submitted
 	url: 'process.php',
     // Fields will be arranged vertically, stretched to full width
@@ -105,7 +106,7 @@ submitValue: false,
 		queryMode: 'local',
 		displayField: 'name',
 		valueField: 'send',
-value: 'd',
+value: 'h',
         allowBlank: false
 
 	},{
@@ -148,7 +149,7 @@ value: 'md',
                     success: function(form, action) {
 						showdata(action.result.root, action.result.subs);
 						store.loadData(action.result.root);
-						$('#form-1011-innerCt').append(form.findField('unit').getValue());
+						$('#form-innerCt').append(form.findField('unit').getValue());
 						/*vdata=action.result.root,
 						$('#myDiv').text(vdata)*/
                     },
@@ -170,11 +171,12 @@ value: 'md',
 		xtype: 'grid',
 		store: store,
         stateful: true,
+		id: 'mygrid',
         stateId: 'stateGrid',
         columns: [
             {
                 text     : 'Thời gian',
-                width    : '28%',
+                width    : '27%',
                 sortable : true,
                 renderer : Ext.util.Format.dateRenderer('d/m/Y H:i:s'),
                 dataIndex: 'time'
@@ -239,8 +241,7 @@ value: 'md',
         
     
 
-		</script>
-    <script>
+//Phần code cho chart và các hiệu ứng
 		options = {
             chart: {
                         type: 'spline',
@@ -283,6 +284,14 @@ value: 'md',
                     plotOptions: {
                         
                         series: {
+						point: {
+						events: {
+						click: function(){
+							var grid = Ext.getCmp('mygrid');
+							grid.getView().focusRow(getId(this.x));
+						}
+						}
+						},
                             cursor: 'pointer'
                         },
                     },
@@ -300,6 +309,7 @@ value: 'md',
         };
 		function showdata(result,subs){
 			options.series[0].data=[];
+			
 			for (var i=0;i<result.length;i++) {
                         
                         var jyea=result[i][0].substr(0,4);
@@ -312,9 +322,15 @@ value: 'md',
                         
                     }
 			$('#chart-innerCt').highcharts(options);
-
+			
 		}
-		
+		function getId(value){
+			var ar=options.series[0].data;
+			for (var i=0;i<ar.length;i++){
+				if (ar[i][0]==value) break;
+			}
+			return i;
+		}
 		window.onload = function(){ setTimeout(
 		function(){
 		$('#chart-innerCt').highcharts(options);
